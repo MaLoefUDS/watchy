@@ -69,6 +69,8 @@ def upload():
     url = request.form['url']
     if validate_url(url):
         return render_template('index.html', username=username)
+    else:
+        return render_template('index.html', username=username, error="Invalid URL")
 
 
 if __name__ == "__main__":

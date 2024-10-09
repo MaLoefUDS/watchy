@@ -15,6 +15,7 @@
     <form action="/upload" method="POST">
       <label> Add a YouTube video</label>
       <input type="text" placeholder="Youtube URL" name="url" id="url">
+      <p id="error"> {% if error %} {{ error }} {% endif %} </p>
       <button id="submit">Submit</button>
     </form>
 
