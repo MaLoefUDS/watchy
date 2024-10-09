@@ -1,15 +1,17 @@
 
-from flask import Flask, render_template, request, redirect, url_for, flash, make_response
+from flask import Flask, render_template, request, redirect, url_for, flash, make_response, session
 from backend import *
 import hashlib
 
 app = Flask(__name__)
+app.secret_key = "watchy motchy"
 
 
 @app.route("/")
 def main():
-    if request.cookies.get("id"):
-        return render_template('index.html')
+    username = session.get("username")
+    if username:
+        return render_template('index.html', username=username)
     else:
         return render_template('login.html')
 
@@ -25,12 +27,10 @@ def login():
     else:
         username = request.form['username']
         password = request.form['password']
-        pw_hash = sha256(password)
 
-        if is_registered(username, sha256(password)):
-            resp = make_response(render_template('index.html'))
-            resp.set_cookie('id', sha256(username), max_age=60*60*24*365)
-            return resp
+        if check_login(username, password):
+            session["username"] = username
+            return render_template('index.html', username=username)
         else:
             return render_template('login.html', error="Invalid username or password")
 
@@ -54,19 +54,23 @@ def register():
         if password != password_confirm:
             return render_template('register.html', password_confirmation_error="Passwords do not match")
 
-        add_user(username, sha256(password))
-        return render_template('index.html')
+        add_user(username, password)
+        return render_template('index.html', username=username)
 
 
 @app.route("/upload", methods=['POST'])
 def upload():
 
+    username = session.get("username")
+    if not username:
+        return render_template('login', error="You must be logged in to upload a video")
+
     # add url to users list
     url = request.form['url']
     if validate_url(url):
-        return render_template('index.html', url=url)
+        return render_template('index.html', username=username)
 
 
 if __name__ == "__main__":
     init_db()
-    app.run()
+    app.run(debug=True)
