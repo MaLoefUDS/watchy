@@ -68,9 +68,21 @@ def upload():
     # add url to users list
     url = request.form['url']
     if validate_url(url):
+        add_video(username, url)
         return render_template('index.html', username=username)
     else:
         return render_template('index.html', username=username, error="Invalid URL")
+
+
+@app.route("/videos", methods=['GET'])
+def videos():
+
+    username = session.get("username")
+    if not username:
+        return render_template('login', error="You must be logged in to view videos")
+
+    # get videos from database
+    return { "videos": get_videos(username) }
 
 
 if __name__ == "__main__":

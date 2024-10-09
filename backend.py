@@ -13,6 +13,8 @@ def init_db():
     c = conn.cursor()
     c.execute('''CREATE TABLE IF NOT EXISTS users
                  (username TEXT PRIMARY KEY, password TEXT)''')
+    c.execute('''CREATE TABLE IF NOT EXISTS videos
+                 (username TEXT, url TEXT)''')
     conn.commit()
     conn.close()
 
@@ -49,4 +51,21 @@ def check_login(username, password):
     conn.close()
     return user and user[1] == pw_hash
 
+
+def add_video(username, url):
+    video_id = url.split('v=')[-1]
+    conn = sqlite3.connect('database.db')
+    c = conn.cursor()
+    c.execute("INSERT INTO videos VALUES (?, ?)", (username, video_id))
+    conn.commit()
+    conn.close()
+
+
+def get_videos(username):
+    conn = sqlite3.connect('database.db')
+    c = conn.cursor()
+    c.execute("SELECT url FROM videos WHERE username = ?", (username, ))
+    videos = c.fetchall()
+    conn.close()
+    return [video[0] for video in videos]
 
