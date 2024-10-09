@@ -1,0 +1,36 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+
+    <title>WATCHY</title>
+    <script src="{{ url_for('static', filename='main.js') }}"></script>
+
+  </head>
+  <body>
+
+    <h1> WATCHY </h1>
+
+    <form action="/register" method="POST">
+      <label> Register with Watchy </label> <br></bR>
+
+      <label> Username </label> <br>
+      <input type="text" placeholder="Username" name="username" id="username"> <br>
+      <p id="username-error"> {% if username_error %} {{ username_error }} {% endif %} </p>
+
+      <label> Password </label> <br>
+      <input type="password" placeholder="Password" name="password" id="password"> <br>
+      <p id="password-error"> {% if password_error %} {{ password_error }} {% endif %} </p>
+
+      <label> Confirm Password </label> <br>
+      <input type="password" placeholder="Confirm Password" name="password-confirmation" id="password-confirmation"> <br>
+      <p id="password-confirmation-error"> {% if password_confirmation_error %} {{ password_confirmation_error }} {% endif %} </p>
+
+      <button id="submit"> Register </button>
+    </form>
+
+    <br>
+    <a href="/register"> Do not have an account yet? </a>
+
+  </body>
+</html>

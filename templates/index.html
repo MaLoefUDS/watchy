@@ -1,0 +1,23 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+
+    <title>WATCHY</title>
+    <script src="{{ url_for('static', filename='main.js') }}"></script>
+
+  </head>
+  <body>
+
+    <h1> WATCHY </h1>
+
+    <form action="/upload" method="POST">
+      <label> Add a YouTube video</label>
+      <input type="text" placeholder="Youtube URL" name="url" id="url">
+      <button id="submit">Submit</button>
+    </form>
+
+    <li id="feed"></li>
+
+  </body>
+</html>
