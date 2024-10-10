@@ -4,23 +4,28 @@
   <head>
 
     <title>WATCHY</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='main.css') }}">
     <script src="{{ url_for('static', filename='main.js') }}"></script>
     <script src="{{ url_for('static', filename='load_videos.js') }}"></script>
 
   </head>
   <body>
 
-    <h1> WATCHY </h1>
+    {% include 'includes/header.html' %}
+    <br>
     <h3> Welcome {{ username }} </h3>
 
     <form action="/upload" method="POST">
-      <label> Add a YouTube video</label>
+
+      <label> Add a YouTube video </label> <br>
       <input type="text" placeholder="Youtube URL" name="url" id="url">
       <p id="error"> {% if error %} {{ error }} {% endif %} </p>
+
       <button id="submit">Submit</button>
     </form>
 
-    <li id="feed"></li>
+    <br> <br>
+    <div id="feed"></div>
 
   </body>
 </html>
