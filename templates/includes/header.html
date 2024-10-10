@@ -1,7 +1,10 @@
 
 <div id="header">
   <div id="content">
-    <img src="{{ url_for('static', filename='ytlogo.png') }}" width="80" height="45">
+    <img src="{{ url_for('static', filename='ytlogo.png') }}" width="160" height="90">
     WATCHY
+  </div>
+  <div id="hidden">
+    <button id="logout-button" onclick="window.location.href='/logout'">Logout</button>
   </div>
 </div>

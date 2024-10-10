@@ -15,16 +15,16 @@
     <br>
     <h3> Welcome {{ username }} </h3>
 
+    <div id="spacer"></div>
+
     <form action="/upload" method="POST">
-
-      <label> Add a YouTube video </label> <br>
-      <input type="text" placeholder="Youtube URL" name="url" id="url">
-      <p id="error"> {% if error %} {{ error }} {% endif %} </p>
-
-      <button id="submit">Submit</button>
+      <input type="text" placeholder="YouTube URL" name="url" id="url">
+      <button type="submit" id="submit">+</button>
     </form>
 
+    {% if error %} <p id="error">{{ error }} </p> {% endif %}
     <br> <br>
+
     <div id="feed"></div>
 
   </body>

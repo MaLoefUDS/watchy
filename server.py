@@ -28,11 +28,11 @@ def login():
         username = request.form['username']
         password = request.form['password']
 
-        if check_login(username, password):
-            session["username"] = username
-            return render_template('index.html', username=username)
-        else:
+        if not check_login(username, password):
             return render_template('login.html', error="Invalid username or password")
+
+        session["username"] = username
+        return redirect(url_for('main'))
 
 
 @app.route("/register", methods=['GET', 'POST'])
@@ -58,6 +58,12 @@ def register():
         return render_template('index.html', username=username)
 
 
+@app.route("/logout")
+def logout():
+    session.pop("username", None)
+    return render_template('login.html')
+
+
 @app.route("/upload", methods=['POST'])
 def upload():
 
@@ -65,13 +71,41 @@ def upload():
     if not username:
         return render_template('login', error="You must be logged in to upload a video")
 
-    # add url to users list
     url = request.form['url']
-    if validate_url(url):
-        add_video(username, url)
-        return render_template('index.html', username=username)
-    else:
+    if not validate_url(url):
         return render_template('index.html', username=username, error="Invalid URL")
+
+    if video_exists(username, url):
+        return render_template('index.html', username=username, error="Video is already in your list")
+
+    add_video(username, url)
+    return redirect(url_for('main'))
+
+
+@app.route("/update/<content>", methods=['GET'])
+def update(content):
+
+    username = session.get("username")
+    if not username:
+        return
+
+    video_id, new_state = content.split('&')
+    if not video_id or not new_state:
+        return render_template('index.html', username=username, error="Invalid request")
+
+    if not video_exists(username, video_id):
+        return render_template('index.html', username=username, error="Video does not exist")
+
+    if not new_state.isdigit():
+        return render_template('index.html', username=username, error="Invalid state")
+    else:
+        new_state = int(new_state)
+
+    if not new_state in video_state.values():
+        return render_template('index.html', username=username, error="Invalid state")
+
+    update_video(username, video_id, new_state)
+    return render_template('index.html', username=username)
 
 
 @app.route("/videos", methods=['GET'])
@@ -87,4 +121,4 @@ def videos():
 
 if __name__ == "__main__":
     init_db()
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0', port=8080)
