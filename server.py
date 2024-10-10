@@ -55,7 +55,7 @@ def register():
             return render_template('register.html', password_confirmation_error="Passwords do not match")
 
         add_user(username, password)
-        return render_template('index.html', username=username)
+        return redirect(url_for('main'))
 
 
 @app.route("/logout")

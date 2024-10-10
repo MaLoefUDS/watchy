@@ -63,20 +63,25 @@ video_state = {
     'delete': 3
 }
 
+def extract_id(url):
+    if "v=" in url:
+        return url.split('v=')[-1].split('&')[0]
+    else:
+        return url.split('/')[-1].split('?')[0]
+
 
 def add_video(username, url):
-    video_id = url.split('v=')[-1]
     conn = sqlite3.connect('database.db')
     c = conn.cursor()
-    c.execute("INSERT INTO videos VALUES (?, ?, 0)", (username, video_id))
+    c.execute("INSERT INTO videos VALUES (?, ?, 0)", (username, extract_id(url)))
     conn.commit()
     conn.close()
 
 
-def video_exists(username, video_id):
+def video_exists(username, url):
     conn = sqlite3.connect('database.db')
     c = conn.cursor()
-    c.execute("SELECT * FROM videos WHERE username = ? AND identifier = ?", (username, video_id))
+    c.execute("SELECT * FROM videos WHERE username = ? AND identifier = ?", (username, extract_id(url)))
     video = c.fetchone()
     conn.close()
     return video

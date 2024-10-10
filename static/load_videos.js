@@ -18,7 +18,7 @@ const add_video = function(identifier, state) {
     const video_element = document.createElement('div');
     video_element.innerHTML = `
         <div id="video-container">
-            <iframe id="video" src="https://www.youtube.com/embed/${identifier}?mute=1"></iframe>
+            <iframe id="video" src="https://www.youtube.com/embed/${identifier}?mute=1&showinfo=0"></iframe>
             <img id="state-together" src="static/state_together.png" width="50px" height="50px" onclick="update_state(event, 1)">
             <img id="state-alone"    src="static/state_alone.png"    width="50px" height="50px" onclick="update_state(event, 2)">
             <img id="state-deny" src="static/deny.png" width="50px" height="50px" onclick="update_state(event, 3)">
@@ -27,7 +27,7 @@ const add_video = function(identifier, state) {
         </div>
     `;
     feed.appendChild(video_element);
-    highlight_video(video_element);
+    highlight_video(video_element.querySelector("#video-container"));
 };
 
 const update_state = function(event, new_state) {
