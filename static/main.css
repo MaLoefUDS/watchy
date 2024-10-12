@@ -98,6 +98,10 @@ body {
   transition: 0.2s;
 }
 
+#video-container #video {
+  border: 1vh solid #ff0000;
+}
+
 #video-container #state-together {
   background-color: #aa0000;
   border: 0.3vh solid #ff0000;

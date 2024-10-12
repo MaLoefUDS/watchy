@@ -1,7 +1,7 @@
 
 document.addEventListener('DOMContentLoaded', function() {
 
-    fetch('/videos')
+    fetch('/api/videos')
         .then(response => response.json())
         .then(data => {
             const videos = JSON.stringify(data);
@@ -43,16 +43,26 @@ const update_state = function(event, new_state) {
     }
 
     // update remote state
-    fetch(`/update/${identifier}&${new_state}`);
+    fetch(`/api/update?video_id=${identifier}&state=${new_state}`);
 }
 
 const highlight_video = function(video_container) {
 
+  // fetch state
   const state = video_container.querySelector("#state").textContent;
+  let state_color = "#333";
+
+  // find color for state
   switch (state) {
-    case "0": video_container.style.background = "radial-gradient(circle, #333, rgba(0, 0, 0, 0))"; break;
-    case "1": video_container.style.background = "radial-gradient(circle, #ff0000aa, rgba(0, 0, 0, 0))"; break;
-    case "2": video_container.style.background = "radial-gradient(circle, #0000ffaa, rgba(0, 0, 0, 0))"; break;
+    case "0": state_color = "#333"; break;
+    case "1": state_color = "#ff0000"; break;
+    case "2": state_color = "#0000ff"; break;
   }
 
+  // style video
+  const video = video_container.querySelector("#video");
+  video.style.border = `0.3vh solid ${state_color}`;
+  video_container.style.background = `radial-gradient(circle, ${state_color}aa, rgba(0, 0, 0, 0))`;
+
 }
+
