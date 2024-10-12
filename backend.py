@@ -20,26 +20,33 @@ def validate_url(url):
 def init_db():
     conn = sqlite3.connect('database.db')
     c = conn.cursor()
-    c.execute('''CREATE TABLE IF NOT EXISTS users
-                 (username TEXT PRIMARY KEY, password TEXT)''')
+    c.execute('''CREATE TABLE IF NOT EXISTS accounts
+                 (username TEXT PRIMARY KEY, password TEXT, salt TEXT)''')
+    c.execute('''CREATE TABLE IF NOT EXISTS lists
+                 (username TEXT, list_id TEXT)''')
     c.execute('''CREATE TABLE IF NOT EXISTS videos
-                (username TEXT, identifier TEXT, state INTEGER DEFAULT 0)''')
+                 (list_id TEXT, video_id TEXT, state INTEGER DEFAULT 0)''')
     conn.commit()
     conn.close()
 
 
-def sha256(input):
+def sha256(input, salt):
     hash = hashlib.sha256()
-    hash.update(bytes(input, 'utf-8'))
+    hash.update((input + salt).encode())
     return hash.hexdigest()
+
+
+def generate_salt():
+    return os.urandom(16).hex()
 
 
 ## -------- User management -------- ##
 
 def add_user(username, password):
+    salt = generate_salt()
     conn = sqlite3.connect('database.db')
     c = conn.cursor()
-    c.execute("INSERT INTO users VALUES (?, ?)", (username, sha256(password)))
+    c.execute("INSERT INTO accounts VALUES (?, ?, ?)", (username, sha256(password, salt), salt))
     conn.commit()
     conn.close()
 
@@ -47,17 +54,24 @@ def add_user(username, password):
 def user_exists(username):
     conn = sqlite3.connect('database.db')
     c = conn.cursor()
-    c.execute("SELECT * FROM users WHERE username = ?", (username, ))
+    c.execute("SELECT * FROM accounts WHERE username = ?", (username, ))
     user = c.fetchone()
     conn.close()
     return user
 
 
 def check_login(username, password):
-    pw_hash = sha256(password)
     conn = sqlite3.connect('database.db')
     c = conn.cursor()
-    c.execute("SELECT * FROM users WHERE username = ? AND password = ?", (username, pw_hash))
+
+    # get salt from database
+    c.execute("SELECT salt FROM accounts WHERE username = ?", (username, ))
+    salt = c.fetchone()[0]
+
+    # obtain salted hash of password
+    pw_hash = sha256(password, salt)
+    c.execute("SELECT * FROM accounts WHERE username = ? AND password = ?", (username, pw_hash))
+
     user = c.fetchone()
     conn.close()
     return user and user[1] == pw_hash
