@@ -65,13 +65,24 @@ def logout():
 
 
 @app.route("/upload", methods=['POST'])
-def upload():
+def upload_form():
+    url = request.form['url']
+    return upload(url)
+
+
+@app.route("/api/upload", methods=['GET', 'POST'])
+def upload_api():
+    url = request.args.get('url')
+    return upload(url)
+
+
+# Common function for both upload from api and from query parameters
+def upload(url):
 
     username = session.get("username")
     if not username:
         return render_template('login', error="You must be logged in to upload a video")
 
-    url = request.form['url']
     if not validate_url(url):
         return render_template('index.html', username=username, error="Invalid URL")
 
@@ -82,33 +93,35 @@ def upload():
     return redirect(url_for('main'))
 
 
-@app.route("/update/<content>", methods=['GET'])
-def update(content):
+@app.route("/api/update", methods=['GET', 'POST'])
+def update_api():
 
     username = session.get("username")
     if not username:
         return
 
-    video_id, new_state = content.split('&')
-    if not video_id or not new_state:
+    video_id = request.args.get('video_id')
+    state = request.args.get('state')
+
+    if not video_id or not state:
         return render_template('index.html', username=username, error="Invalid request")
 
     if not video_exists(username, video_id):
         return render_template('index.html', username=username, error="Video does not exist")
 
-    if not new_state.isdigit():
+    if not state.isdigit():
         return render_template('index.html', username=username, error="Invalid state")
     else:
-        new_state = int(new_state)
+        state = int(state)
 
-    if not new_state in video_state.values():
+    if not state in video_state.values():
         return render_template('index.html', username=username, error="Invalid state")
 
-    update_video(username, video_id, new_state)
+    update_video(username, video_id, state)
     return render_template('index.html', username=username)
 
 
-@app.route("/videos", methods=['GET'])
+@app.route("/api/videos", methods=['GET'])
 def videos():
 
     username = session.get("username")

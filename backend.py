@@ -4,7 +4,8 @@ import hashlib
 
 
 def validate_url(url):
-    return url.startswith('https://www.youtube.com/watch?v=') or \
+    return url.startswith('https://www.youtube.com/') or \
+           url.startswith('https://youtube.com/') or \
            url.startswith('https://youtu.be/')
 
 
