@@ -134,4 +134,8 @@ def videos():
 
 if __name__ == "__main__":
     init_db()
-    app.run(debug=True, host='0.0.0.0', port=8080)
+
+    if https_enabled():
+        app.run(debug=True, host='0.0.0.0', port=8080, ssl_context=(f'/etc/letsencrypt/live/{domain}/fullchain.pem', f'/etc/letsencrypt/live/{domain}/privkey.pem'))
+    else:
+        app.run(debug=True, host='0.0.0.0', port=8080)

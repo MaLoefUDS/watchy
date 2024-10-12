@@ -1,6 +1,14 @@
 
 import sqlite3
 import hashlib
+import os
+
+
+domain = 'thevent.xyz'
+
+def https_enabled():
+    return os.path.exists(f'/etc/letsencrypt/live/{domain}/fullchain.pem') and \
+           os.path.exists(f'/etc/letsencrypt/live/{domain}/privkey.pem')
 
 
 def validate_url(url):
