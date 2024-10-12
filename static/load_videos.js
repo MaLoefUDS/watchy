@@ -33,12 +33,18 @@ const add_video = function(identifier, state) {
 const update_state = function(event, new_state) {
     const video_container = event.target.parentElement;
     const identifier = video_container.querySelector("#identifier").innerText;
-    video_container.querySelector("#state").innerText = new_state;
+
+    // toggle state
+    const state = video_container.querySelector("#state").innerText;
+    if (new_state == state) {
+        new_state = 0;
+    }
 
     // update local state
     if (new_state == 3) {
         video_container.remove();
     } else {
+        video_container.querySelector("#state").innerText = new_state;
         highlight_video(video_container);
     }
 
@@ -50,11 +56,11 @@ const highlight_video = function(video_container) {
 
   // fetch state
   const state = video_container.querySelector("#state").textContent;
-  let state_color = "#333";
+  let state_color = "#333333";
 
   // find color for state
   switch (state) {
-    case "0": state_color = "#333"; break;
+    case "0": break;
     case "1": state_color = "#ff0000"; break;
     case "2": state_color = "#0000ff"; break;
   }
