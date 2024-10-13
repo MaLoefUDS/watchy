@@ -19,7 +19,7 @@ const add_list = function(list_name, role) {
     list_element.innerHTML = `
         <div id="list-container">
             <div id="list-name" onclick="view_list(event)">${list_name}</div>
-            <img id="delete-video" src="static/deny.png" width="50px" height="50px" onclick="delete_list(event)">
+            <img id="delete-list" src="static/assets/delete.png" width="50px" height="50px" onclick="delete_list(event)">
             <div hidden id="role" value="${role}"></div>
         </div>
     `;

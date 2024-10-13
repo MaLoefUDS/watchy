@@ -44,7 +44,7 @@ const add_video = function(role, identifier, state) {
     const watch_together = document.createElement('img');
     watch_together.id = "watch-together";
     watch_together.classList.add("watch-state-button");
-    watch_together.src = "static/state_together.png";
+    watch_together.src = "static/assets/watch_together.png";
     watch_together.onclick = function(event) { update_state(event, 1); }
     video_container.appendChild(watch_together);
 
@@ -52,7 +52,7 @@ const add_video = function(role, identifier, state) {
     const watch_alone = document.createElement('img');
     watch_alone.id = "watch-alone";
     watch_alone.classList.add("watch-state-button");
-    watch_alone.src = "static/state_alone.png";
+    watch_alone.src = "static/assets/watch_alone.png";
     watch_alone.onclick = function(event) { update_state(event, 2); }
     video_container.appendChild(watch_alone);
 
@@ -63,7 +63,7 @@ const add_video = function(role, identifier, state) {
         const remove_video = document.createElement('img');
         remove_video.id = "remove-video";
         remove_video.classList.add("watch-state-button");
-        remove_video.src = "static/deny.png";
+        remove_video.src = "static/assets/delete.png";
         remove_video.onclick = function(event) { update_state(event, 3); }
         video_container.appendChild(remove_video);
     }

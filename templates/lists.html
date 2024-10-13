@@ -5,8 +5,9 @@
 
     <title>WATCHY</title>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='main.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='lists.css') }}">
     <script src="{{ url_for('static', filename='main.js') }}"></script>
-    <script src="{{ url_for('static', filename='load_lists.js') }}"></script>
+    <script src="{{ url_for('static', filename='lists.js') }}"></script>
 
   </head>
   <body>
@@ -18,11 +19,16 @@
     <div id="spacer"></div>
 
     <form action="/create-list" method="POST">
-      <input type="text" placeholder="Create a new list" name="list-name" id="list-name">
+      <input type="text" placeholder="Create a new list" name="list-name">
       <button type="submit" id="submit">+</button>
     </form>
 
-    {% if error %} <p id="error">{{ error }} </p> {% endif %}
+    {% if error %}
+      <p id="error">
+        {{ error }}
+        <img src="{{ url_for('static', filename='delete.png') }}" id="delete-error">
+      </p>
+    {% endif %}
     <br> <br>
 
     <div id="lists"></div>

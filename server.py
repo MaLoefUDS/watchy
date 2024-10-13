@@ -88,7 +88,7 @@ def join_list():
 
     username = session.get("username")
     if not username:
-        return render_template('login', error="You must be logged in to join a list")
+        return render_template('login.html', error="You must be logged in to join a list")
 
     token = request.args.get('token')
     if not token:
@@ -123,14 +123,14 @@ def view_list():
 
     username = session.get("username")
     if not username:
-        return render_template('login', error="You must be logged in to view lists")
+        return render_template('login.html', error="You must be logged in to view lists")
 
     list_id = request.args.get('list_id')
     if not list_id:
         return render_template('lists.html', username=username, error="Invalid request")
 
     role = get_role(username, list_id)
-    return render_template('index.html', username=username, list_id=list_id, role=role)
+    return render_template('videos.html', username=username, list_id=list_id, role=role)
 
 
 # Common function for both create lists from api and from query parameters
@@ -138,7 +138,7 @@ def create_list(name):
 
     username = session.get("username")
     if not username:
-        return render_template('login', error="You must be logged in to create a list")
+        return render_template('login.html', error="You must be logged in to create a list")
 
     if not name:
         return render_template('lists.html', username=username, error="Invalid list name")
@@ -155,7 +155,7 @@ def api_delete_list():
 
     username = session.get("username")
     if not username:
-        return render_template('login', error="You must be logged in to delete a list")
+        return render_template('login.html', error="You must be logged in to delete a list")
 
     list_id = request.args.get('list_id')
     if not list_id:
@@ -187,17 +187,17 @@ def upload_video(list_id, url):
 
     username = session.get("username")
     if not username:
-        return render_template('login', error="You must be logged in to upload a video")
+        return render_template('login.html', error="You must be logged in to upload a video")
 
     role = get_role(username, list_id)
     if not validate_url(url):
-        return render_template('index.html', username=username, list_id=list_id, role=role, error="Invalid URL")
+        return render_template('videos.html', username=username, list_id=list_id, role=role, error="Invalid URL")
 
     if video_exists(list_id, url):
-        return render_template('index.html', username=username, list_id=list_id, role=role, error="Video is already in your list")
+        return render_template('videos.html', username=username, list_id=list_id, role=role, error="Video is already in your list")
 
     add_video(list_id, url)
-    return render_template('index.html', username=username, list_id=list_id, role=role)
+    return render_template('videos.html', username=username, list_id=list_id, role=role)
 
 
 @app.route("/api/update-video", methods=['GET', 'POST'])
@@ -219,20 +219,20 @@ def api_update_video():
     role = get_role(username, list_id)
 
     if not video_exists(list_id, video_id):
-        return render_template('index.html', username=username, list_id=list_id, role=role, error="Video does not exist")
+        return render_template('videos.html', username=username, list_id=list_id, role=role, error="Video does not exist")
 
     if not state.isdigit():
-        return render_template('index.html', username=username, list_id=list_id, role=role, error="Invalid state")
+        return render_template('videos.html', username=username, list_id=list_id, role=role, error="Invalid state")
     state = int(state)
 
     if not state in video_state.values():
-        return render_template('index.html', username=username, list_id=list_id, role=role, error="Invalid state")
+        return render_template('videos.html', username=username, list_id=list_id, role=role, error="Invalid state")
 
     if role != list_roles['owner'] and role != list_roles['editor']:
-        return render_template('index.html', username=username, list_id=list_id, role=role, error="You do not have permission to modify this list")
+        return render_template('videos.html', username=username, list_id=list_id, role=role, error="You do not have permission to modify this list")
 
     update_video(list_id, video_id, state)
-    return render_template('index.html', username=username, list_id=list_id, role=role)
+    return render_template('videos.html', username=username, list_id=list_id, role=role)
 
 
 @app.route("/api/videos", methods=['GET'])
@@ -243,6 +243,9 @@ def videos():
 
     list_id = request.args.get('list_id')
     if not list_id:
+        return { "videos": [] }
+
+    if not user_in_list(session.get("username"), list_id):
         return { "videos": [] }
 
     # get videos from database

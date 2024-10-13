@@ -77,60 +77,9 @@ body {
   display: block;
 }
 
-.watch-state-button {
-  width: 50px;
-  height: 50px;
-}
-
-#video-container {
-  display: flex;
-  margin-left: 5vw;
-  margin-bottom: 4vh;
-}
-
-#video-container img {
-  align-self: center;
-  min-width: 4vw;
-  min-height: 4vw;
-  margin-left: 2vw;
-  padding: 1vh;
-  color: #eee;
-  border-radius: 2vh;
-  font-size: 25px;
-  font-weight: 1000;
-  box-shadow: 0 5px 20px #0004;
-  cursor: pointer;
-  transition: 0.2s;
-}
-
-#video-container #video {
-  border: 1vh solid #ff0000;
-}
-
-#video-container #watch-together {
-  background-color: #aa0000;
-  border: 0.3vh solid #ff0000;
-}
-
-#video-container #watch-alone {
-  background-color: #0000aa;
-  border: 0.3vh solid #0000ff;
-}
-
-#video-container #remove-video {
-  background-color: #333;
-  border: 0.3vh solid #555;
-}
-
-#video {
-  width: 50vw;
-  height: 30vw;
-  border-radius: 2vh;
-  box-shadow: 0 5px 20px #0004;
-}
-
 form {
   display: flex;
+  align-items: center;
   flex-direction: row;
   margin-left: 5vw;
 }
@@ -156,15 +105,21 @@ input:focus {
 }
 
 button[type=submit] {
-  align-self: center;
-  min-width: 4vw;
-  min-height: 4vw;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  width: 2vw;
+  height: 2vw;
+  min-width: 40px;
+  min-height: 40px;
+  padding: 5px;
   margin-left: 2vw;
   background-color: #ff0000;
   color: #eee;
   border: 0.3vh solid #ff0000;
   border-radius: 2vh;
-  font-size: 25px;
+  font-size: 30px;
   font-weight: 1000;
   box-shadow: 0 5px 20px #0004;
   cursor: pointer;
@@ -180,4 +135,32 @@ button[type=submit]:hover {
   height: 200px;
 }
 
+#error {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  text-align: center;
+  width: 40vw;
+  height: 2vw;
+  background-color: #ff0000;
+  font-size: 2.5vw;
+  font-weight: 1000;
+  color: #eee;
+  border-radius: 1.5vh;
+  padding: 1.5vh;
+  box-shadow: 0 5px 20px #0004;
+  margin-left: 5vw;
+  margin-top: 1vh;
+}
+
+#delete-error {
+  width: 15px;
+  height: 15px;
+  min-width: 20px;
+  min-height: 20px;
+  padding: 5px;
+  align-self: center;
+  margin-left: 2vw;
+  cursor: pointer;
+}
 

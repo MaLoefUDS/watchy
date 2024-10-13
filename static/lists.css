@@ -1,0 +1,42 @@
+
+#list-container {
+  display: flex;
+  flex-direction: row;
+  margin-top: 5vh;
+}
+
+#list-name {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  margin-left: 5vw;
+  width: 40vw;
+  height: 50px;
+  background-color: #333;
+  border: 0.3vh solid #ff0000;
+  font-size: 30px;
+  font-weight: 1000;
+  color: #aaa;
+  border-radius: 1.5vh;
+  padding: 1.5vh;
+  box-shadow: 0 5px 20px #0004;
+}
+
+#delete-list {
+  width: 30px;
+  height: 30px;
+  min-width: 20px;
+  min-height: 20px;
+  padding: 5px;
+  box-shadow: 0 5px 20px #0004;
+  align-self: center;
+  margin-left: 2vw;
+  background-color: #ff0000;
+  color: #fff;
+  border: 0.3vh solid #ff0000;
+  border-radius: 2vh;
+  font-size: 15px;
+  font-weight: 1000;
+  cursor: pointer;
+}

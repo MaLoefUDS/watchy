@@ -1,0 +1,52 @@
+
+.watch-state-button {
+  width: 50px;
+  height: 50px;
+}
+
+#video-container {
+  display: flex;
+  margin-left: 5vw;
+  margin-bottom: 4vh;
+}
+
+#video-container img {
+  align-self: center;
+  min-width: 4vw;
+  min-height: 4vw;
+  margin-left: 2vw;
+  padding: 1vh;
+  color: #eee;
+  border-radius: 2vh;
+  font-size: 25px;
+  font-weight: 1000;
+  box-shadow: 0 5px 20px #0004;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+#video-container #video {
+  border: 1vh solid #ff0000;
+}
+
+#video-container #watch-together {
+  background-color: #aa0000;
+  border: 0.3vh solid #ff0000;
+}
+
+#video-container #watch-alone {
+  background-color: #0000aa;
+  border: 0.3vh solid #0000ff;
+}
+
+#video-container #remove-video {
+  background-color: #333;
+  border: 0.3vh solid #555;
+}
+
+#video {
+  width: 50vw;
+  height: 30vw;
+  border-radius: 2vh;
+  box-shadow: 0 5px 20px #0004;
+}
