@@ -6,27 +6,26 @@
     <title>WATCHY</title>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='main.css') }}">
     <script src="{{ url_for('static', filename='main.js') }}"></script>
-    <script src="{{ url_for('static', filename='load_videos.js') }}"></script>
+    <script src="{{ url_for('static', filename='load_lists.js') }}"></script>
 
   </head>
   <body>
 
     {% include 'includes/header.html' %}
     <br>
-    <h3> Welcome {{ username }} to {{ list_id }} </h3>
+    <h3> Welcome {{ username }} </h3>
 
     <div id="spacer"></div>
 
-    <form action="/upload-video" method="POST">
-      <input hidden type="text" name="list_id" id="list_id" value="{{ list_id }}">
-      <input type="text" placeholder="YouTube URL" name="url" id="url">
+    <form action="/create-list" method="POST">
+      <input type="text" placeholder="Create a new list" name="list-name" id="list-name">
       <button type="submit" id="submit">+</button>
     </form>
 
     {% if error %} <p id="error">{{ error }} </p> {% endif %}
     <br> <br>
 
-    <div id="feed"></div>
+    <div id="lists"></div>
 
   </body>
 </html>

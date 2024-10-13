@@ -11,7 +11,7 @@ app.secret_key = "watchy motchy"
 def main():
     username = session.get("username")
     if username:
-        return render_template('index.html', username=username)
+        return render_template('lists.html', username=username)
     else:
         return render_template('login.html')
 
@@ -64,72 +64,150 @@ def logout():
     return render_template('login.html')
 
 
-@app.route("/upload", methods=['POST'])
-def upload_form():
+@app.route("/create-list", methods=['POST'])
+def form_create_list():
+    name = request.form['list-name']
+    return create_list(name)
+
+
+@app.route("/api/create-list", methods=['GET', 'POST'])
+def api_create_list():
+    name = request.args.get('list-name')
+    return create_list(name)
+
+
+@app.route("/view-list", methods=['GET'])
+def view_list():
+
+    username = session.get("username")
+    if not username:
+        return render_template('login', error="You must be logged in to view lists")
+
+    list_id = request.args.get('list_id')
+    if not list_id:
+        return render_template('lists.html', username=username, error="Invalid request")
+
+    return render_template('index.html', username=username, list_id=list_id)
+
+
+# Common function for both create lists from api and from query parameters
+def create_list(name):
+
+    username = session.get("username")
+    if not username:
+        return render_template('login', error="You must be logged in to create a list")
+
+    if not name:
+        return render_template('lists.html', username=username, error="Invalid list name")
+
+    if list_exists(username, name):
+        return render_template('lists.html', username=username, error="List already exists")
+
+    add_list(username, name)
+    return redirect(url_for('main'))
+
+
+@app.route("/api/delete-list", methods=['GET'])
+def api_delete_list():
+
+    username = session.get("username")
+    if not username:
+        return render_template('login', error="You must be logged in to delete a list")
+
+    list_id = request.args.get('list_id')
+    if not list_id:
+        return render_template('lists.html', username=username, error="No list selected")
+
+    if not list_exists(username, list_id):
+        return render_template('lists.html', username=username, error="List does not exist")
+
+    delete_list(username, list_id)
+    return redirect(url_for('main'))
+
+
+@app.route("/upload-video", methods=['POST'])
+def form_upload_video():
+    list_id = request.form['list_id']
     url = request.form['url']
-    return upload(url)
+    return upload_video(list_id, url)
 
 
-@app.route("/api/upload", methods=['GET', 'POST'])
-def upload_api():
+@app.route("/api/upload-video", methods=['GET', 'POST'])
+def api_upload_video():
+    list_id = request.args.get('list_id')
     url = request.args.get('url')
-    return upload(url)
+    return upload_video(list_id, url)
 
 
 # Common function for both upload from api and from query parameters
-def upload(url):
+def upload_video(list_id, url):
 
     username = session.get("username")
     if not username:
         return render_template('login', error="You must be logged in to upload a video")
 
     if not validate_url(url):
-        return render_template('index.html', username=username, error="Invalid URL")
+        return render_template('index.html', username=username, list_id=list_id, error="Invalid URL")
 
-    if video_exists(username, url):
-        return render_template('index.html', username=username, error="Video is already in your list")
+    if video_exists(list_id, url):
+        return render_template('index.html', username=username, list_id=list_id, error="Video is already in your list")
 
-    add_video(username, url)
-    return redirect(url_for('main'))
+    add_video(list_id, url)
+    return render_template('index.html', username=username, list_id=list_id)
 
 
-@app.route("/api/update", methods=['GET', 'POST'])
-def update_api():
+@app.route("/api/update-video", methods=['GET', 'POST'])
+def api_update_video():
 
     username = session.get("username")
     if not username:
         return
 
+    list_id = request.args.get('list_id')
     video_id = request.args.get('video_id')
     state = request.args.get('state')
 
     if not video_id or not state:
-        return render_template('index.html', username=username, error="Invalid request")
+        return render_template('index.html', username=username, list_id=list_id, error="Invalid request")
 
     if not video_exists(username, video_id):
-        return render_template('index.html', username=username, error="Video does not exist")
+        return render_template('index.html', username=username, list_id=list_id, error="Video does not exist")
 
     if not state.isdigit():
-        return render_template('index.html', username=username, error="Invalid state")
+        return render_template('index.html', username=username, list_id=list_id, error="Invalid state")
     else:
         state = int(state)
 
     if not state in video_state.values():
-        return render_template('index.html', username=username, error="Invalid state")
+        return render_template('index.html', username=username, list_id=list_id, error="Invalid state")
 
     update_video(username, video_id, state)
-    return render_template('index.html', username=username)
+    return render_template('index.html', username=username, list_id=list_id)
 
 
 @app.route("/api/videos", methods=['GET'])
 def videos():
 
-    username = session.get("username")
-    if not username:
-        return render_template('login', error="You must be logged in to view videos")
+    if not session.get("username"):
+        return { "videos": [] }
+
+    list_id = request.args.get('list_id')
+    if not list_id:
+        return { "videos": [] }
 
     # get videos from database
-    return { "videos": get_videos(username) }
+    return { "videos": get_videos(list_id) }
+
+
+@app.route("/api/lists", methods=['GET'])
+def lists():
+
+    username = session.get("username")
+    if not username:
+        return { "lists": [] }
+
+    # get lists from database
+    return { "lists": get_lists(username) }
 
 
 if __name__ == "__main__":

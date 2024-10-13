@@ -1,7 +1,8 @@
 
 document.addEventListener('DOMContentLoaded', function() {
 
-    fetch('/api/videos')
+    const list_id = document.querySelector("#list_id").value;
+    fetch(`/api/videos?list_id=${list_id}`)
         .then(response => response.json())
         .then(data => {
             const videos = JSON.stringify(data);
@@ -49,7 +50,7 @@ const update_state = function(event, new_state) {
     }
 
     // update remote state
-    fetch(`/api/update?video_id=${identifier}&state=${new_state}`);
+    fetch(`/api/update-video?video_id=${identifier}&state=${new_state}`);
 }
 
 const highlight_video = function(video_container) {

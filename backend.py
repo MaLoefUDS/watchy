@@ -93,39 +93,74 @@ def extract_id(url):
         return url.split('/')[-1].split('?')[0]
 
 
-def add_video(username, url):
+def add_list(username, list_name):
     conn = sqlite3.connect('database.db')
     c = conn.cursor()
-    c.execute("INSERT INTO videos VALUES (?, ?, 0)", (username, extract_id(url)))
+    c.execute("INSERT INTO lists VALUES (?, ?)", (username, list_name))
     conn.commit()
     conn.close()
 
 
-def video_exists(username, url):
+def add_video(list_id, url):
     conn = sqlite3.connect('database.db')
     c = conn.cursor()
-    c.execute("SELECT * FROM videos WHERE username = ? AND identifier = ?", (username, extract_id(url)))
+    c.execute("INSERT INTO videos VALUES (?, ?, 0)", (list_id, extract_id(url)))
+    conn.commit()
+    conn.close()
+
+
+def video_exists(list_id, url):
+    conn = sqlite3.connect('database.db')
+    c = conn.cursor()
+    c.execute("SELECT * FROM videos WHERE list_id = ? AND video_id = ?", (list_id, extract_id(url)))
     video = c.fetchone()
     conn.close()
     return video
 
 
-def update_video(username, video_id, new_state):
+def list_exists(username, list_id):
+    conn = sqlite3.connect('database.db')
+    c = conn.cursor()
+    c.execute("SELECT * FROM lists WHERE username = ? AND list_id = ?", (username, list_id))
+    video_entry = c.fetchone()
+    conn.close()
+    return video_entry
+
+
+def update_video(list_id, video_id, new_state):
     conn = sqlite3.connect('database.db')
     c = conn.cursor()
     if new_state == video_state['delete']:
-        c.execute("DELETE FROM videos WHERE username = ? AND identifier = ?", (username, video_id))
+        c.execute("DELETE FROM videos WHERE list_id = ? AND video_id = ?", (list_id, video_id))
     else:
-        c.execute("UPDATE videos SET state = ? WHERE username = ? AND identifier = ?", (new_state, username, video_id))
+        c.execute("UPDATE videos SET state = ? WHERE list_id = ? AND video_id = ?", (new_state, list_id, video_id))
     conn.commit()
     conn.close()
 
 
-def get_videos(username):
+def delete_list(username, list_id):
     conn = sqlite3.connect('database.db')
     c = conn.cursor()
-    c.execute("SELECT identifier, state FROM videos WHERE username = ?", (username, ))
+    c.execute("DELETE FROM lists WHERE username = ? AND list_id = ?", (username, list_id))
+    c.execute("DELETE FROM videos WHERE list_id = ?", (list_id, ))
+    conn.commit()
+    conn.close()
+
+
+def get_videos(list_id):
+    conn = sqlite3.connect('database.db')
+    c = conn.cursor()
+    c.execute("SELECT video_id, state FROM videos WHERE list_id = ?", (list_id, ))
     videos = c.fetchall()
     conn.close()
     return videos
+
+
+def get_lists(username):
+    conn = sqlite3.connect('database.db')
+    c = conn.cursor()
+    c.execute("SELECT list_id FROM lists WHERE username = ?", (username, ))
+    lists = c.fetchall()
+    conn.close()
+    return lists
 
