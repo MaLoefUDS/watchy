@@ -1,6 +1,7 @@
 
 import sqlite3
 import hashlib
+import time
 import os
 
 
@@ -23,7 +24,9 @@ def init_db():
     c.execute('''CREATE TABLE IF NOT EXISTS accounts
                  (username TEXT PRIMARY KEY, password TEXT, salt TEXT)''')
     c.execute('''CREATE TABLE IF NOT EXISTS lists
-                 (username TEXT, list_id TEXT)''')
+                 (username TEXT, list_id TEXT, role INTEGER DEFAULT 0)''')
+    c.execute('''CREATE TABLE IF NOT EXISTS invites
+                (list_id TEXT, role INTEGER DEFAULT 2, token TEXT, timestamp INTEGER)''')
     c.execute('''CREATE TABLE IF NOT EXISTS videos
                  (list_id TEXT, video_id TEXT, state INTEGER DEFAULT 0)''')
     conn.commit()
@@ -86,6 +89,12 @@ video_state = {
     'delete': 3
 }
 
+list_roles = {
+    'owner': 0,
+    'editor': 1,
+    'viewer': 2,
+}
+
 def extract_id(url):
     if "v=" in url:
         return url.split('v=')[-1].split('&')[0]
@@ -96,7 +105,51 @@ def extract_id(url):
 def add_list(username, list_name):
     conn = sqlite3.connect('database.db')
     c = conn.cursor()
-    c.execute("INSERT INTO lists VALUES (?, ?)", (username, list_name))
+    c.execute("INSERT INTO lists VALUES (?, ?, 0)", (username, list_name))
+    conn.commit()
+    conn.close()
+
+
+def create_invite(list_id, role):
+    token = generate_salt()
+    conn = sqlite3.connect('database.db')
+    c = conn.cursor()
+    c.execute("INSERT INTO invites VALUES (?, ?, ?, ?)", (list_id, role, token, int(time.time())))
+    conn.commit()
+    conn.close()
+    return token
+
+
+def invite_valid(token):
+    conn = sqlite3.connect('database.db')
+    c = conn.cursor()
+    c.execute("SELECT timestamp FROM invites WHERE token = ?", (token, ))
+    invite = c.fetchone()
+    conn.close()
+    return invite and invite[0] + 14_400 > int(time.time()) # 6 hours
+
+
+def remove_invite(token):
+    conn = sqlite3.connect('database.db')
+    c = conn.cursor()
+    c.execute("DELETE FROM invites WHERE token = ?", (token, ))
+    conn.commit()
+    conn.close()
+
+
+def user_in_list(username, list_id):
+    conn = sqlite3.connect('database.db')
+    c = conn.cursor()
+    c.execute("SELECT * FROM lists WHERE username = ? AND list_id = ?", (username, list_id))
+    user = c.fetchone()
+    conn.close()
+    return user
+
+
+def add_user_to_list(username, list_id, role):
+    conn = sqlite3.connect('database.db')
+    c = conn.cursor()
+    c.execute("INSERT INTO lists VALUES (?, ?, ?)", (username, list_id, role))
     conn.commit()
     conn.close()
 
@@ -159,8 +212,17 @@ def get_videos(list_id):
 def get_lists(username):
     conn = sqlite3.connect('database.db')
     c = conn.cursor()
-    c.execute("SELECT list_id FROM lists WHERE username = ?", (username, ))
+    c.execute("SELECT list_id, role FROM lists WHERE username = ?", (username, ))
     lists = c.fetchall()
     conn.close()
     return lists
+
+
+def get_invite(token):
+    conn = sqlite3.connect('database.db')
+    c = conn.cursor()
+    c.execute("SELECT list_id, role FROM invites WHERE token = ?", (token, ))
+    invite = c.fetchone()
+    conn.close()
+    return invite
 

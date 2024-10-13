@@ -12,6 +12,17 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .catch(error => console.error('Error fetching videos:', error));
 
+    const create_invite = document.getElementById('invite');
+    create_invite.addEventListener('click', function() {
+        fetch(`/api/create-invite?list_id=${list_id}&role=1`)
+            .then(response => response.json())
+            .then(data => {
+                const invite_token = data['invite'];
+                alert(`Invite link: ${window.location.origin}/api/join-list?token=${invite_token}`);
+            })
+            .catch(error => console.error('Error creating invite:', error));
+    });
+
 });
 
 const add_video = function(identifier, state) {

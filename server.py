@@ -64,6 +64,48 @@ def logout():
     return render_template('login.html')
 
 
+@app.route("/api/create-invite", methods=['GET'])
+def invite():
+
+    username = session.get("username")
+    if not username:
+        return { "invite": "" }
+
+    list_id = request.args.get('list_id')
+    role = request.args.get('role')
+    if not list_id or not role:
+        return { "invite": "" }
+
+    if not list_exists(username, list_id):
+        return { "invite": "" }
+
+    token = create_invite(list_id, role)
+    return { "invite": token }
+
+
+@app.route("/api/join-list", methods=['GET'])
+def join_list():
+
+    username = session.get("username")
+    if not username:
+        return render_template('login', error="You must be logged in to join a list")
+
+    token = request.args.get('token')
+    if not token:
+        return render_template('lists.html', username=username, error="Invalid request")
+
+    if not invite_valid(token):
+        return render_template('lists.html', username=username, error="Invite is invalid or expired")
+    invite = get_invite(token)
+
+    if user_in_list(username, invite[0]):
+        return render_template('lists.html', username=username, error="You are already in this list")
+
+    add_user_to_list(username, invite[0], invite[1])
+    remove_invite(token)
+    return redirect(url_for('main'))
+
+
 @app.route("/create-list", methods=['POST'])
 def form_create_list():
     name = request.form['list-name']
