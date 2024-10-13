@@ -77,6 +77,11 @@ body {
   display: block;
 }
 
+.watch-state-button {
+  width: 50px;
+  height: 50px;
+}
+
 #video-container {
   display: flex;
   margin-left: 5vw;
@@ -102,17 +107,17 @@ body {
   border: 1vh solid #ff0000;
 }
 
-#video-container #state-together {
+#video-container #watch-together {
   background-color: #aa0000;
   border: 0.3vh solid #ff0000;
 }
 
-#video-container #state-alone {
+#video-container #watch-alone {
   background-color: #0000aa;
   border: 0.3vh solid #0000ff;
 }
 
-#video-container #state-deny {
+#video-container #remove-video {
   background-color: #333;
   border: 0.3vh solid #555;
 }

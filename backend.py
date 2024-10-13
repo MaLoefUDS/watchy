@@ -226,3 +226,12 @@ def get_invite(token):
     conn.close()
     return invite
 
+
+def get_role(username, list_id):
+    conn = sqlite3.connect('database.db')
+    c = conn.cursor()
+    c.execute("SELECT role FROM lists WHERE username = ? AND list_id = ?", (username, list_id))
+    role = c.fetchone()
+    conn.close()
+    return role[0]
+

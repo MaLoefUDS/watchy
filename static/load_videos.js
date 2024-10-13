@@ -2,12 +2,13 @@
 document.addEventListener('DOMContentLoaded', function() {
 
     const list_id = document.querySelector("#list_id").value;
+    const role = document.querySelector("#role").innerText;
     fetch(`/api/videos?list_id=${list_id}`)
         .then(response => response.json())
         .then(data => {
             const videos = JSON.stringify(data);
             for (let video of data['videos']) {
-                add_video(video[0], video[1])
+                add_video(role, video[0], video[1])
             }
         })
         .catch(error => console.error('Error fetching videos:', error));
@@ -25,26 +26,69 @@ document.addEventListener('DOMContentLoaded', function() {
 
 });
 
-const add_video = function(identifier, state) {
+const add_video = function(role, identifier, state) {
     const feed = document.getElementById('feed');
+
     const video_element = document.createElement('div');
-    video_element.innerHTML = `
-        <div id="video-container">
-            <iframe id="video" src="https://www.youtube.com/embed/${identifier}?mute=1&showinfo=0"></iframe>
-            <img id="state-together" src="static/state_together.png" width="50px" height="50px" onclick="update_state(event, 1)">
-            <img id="state-alone"    src="static/state_alone.png"    width="50px" height="50px" onclick="update_state(event, 2)">
-            <img id="state-deny" src="static/deny.png" width="50px" height="50px" onclick="update_state(event, 3)">
-            <div hidden id="identifier">${identifier}</div>
-            <div hidden id="state">${state}</div>
-        </div>
-    `;
+    video_element.id = "video-element";
+    const video_container = document.createElement('div');
+    video_container.id = "video-container";
+
+    // create youtube video embed
+    const video = document.createElement('iframe');
+    video.src = `https://www.youtube.com/embed/${identifier}?mute=1&showinfo=0`;
+    video.id = "video";
+    video_container.appendChild(video);
+
+    // create watch together button
+    const watch_together = document.createElement('img');
+    watch_together.id = "watch-together";
+    watch_together.classList.add("watch-state-button");
+    watch_together.src = "static/state_together.png";
+    watch_together.onclick = function(event) { update_state(event, 1); }
+    video_container.appendChild(watch_together);
+
+    // create watch alone button
+    const watch_alone = document.createElement('img');
+    watch_alone.id = "watch-alone";
+    watch_alone.classList.add("watch-state-button");
+    watch_alone.src = "static/state_alone.png";
+    watch_alone.onclick = function(event) { update_state(event, 2); }
+    video_container.appendChild(watch_alone);
+
+    // create remove video button
+    // viewers cannot remove videos
+    // this is enforced in backend and only here for styling purposes
+    if (role !== "1") {
+        const remove_video = document.createElement('img');
+        remove_video.id = "remove-video";
+        remove_video.classList.add("watch-state-button");
+        remove_video.src = "static/deny.png";
+        remove_video.onclick = function(event) { update_state(event, 3); }
+        video_container.appendChild(remove_video);
+    }
+
+    // create hidden elements
+    const hidden_identifier = document.createElement('div');
+    hidden_identifier.id = "identifier";
+    hidden_identifier.hidden = true;
+    hidden_identifier.innerText = identifier;
+    video_container.appendChild(hidden_identifier);
+    const hidden_state = document.createElement('div');
+    hidden_state.id = "state";
+    hidden_state.hidden = true;
+    hidden_state.innerText = state;
+    video_container.appendChild(hidden_state);
+
+    video_element.appendChild(video_container);
     feed.appendChild(video_element);
-    highlight_video(video_element.querySelector("#video-container"));
+    highlight_video(video_container);
 };
 
 const update_state = function(event, new_state) {
     const video_container = event.target.parentElement;
     const identifier = video_container.querySelector("#identifier").innerText;
+    const list_id = document.querySelector("#list_id").value;
 
     // toggle state
     const state = video_container.querySelector("#state").innerText;
@@ -61,7 +105,7 @@ const update_state = function(event, new_state) {
     }
 
     // update remote state
-    fetch(`/api/update-video?video_id=${identifier}&state=${new_state}`);
+    fetch(`/api/update-video?list_id=${list_id}&video_id=${identifier}&state=${new_state}`);
 }
 
 const highlight_video = function(video_container) {
